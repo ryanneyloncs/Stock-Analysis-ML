@@ -1,9 +1,4 @@
-"""
-Data fetching module for retrieving stock data from Yahoo Finance.
-
-This module handles all data retrieval operations including retry logic
-for handling transient network failures.
-"""
+"""Fetches stock data from Yahoo Finance with retry logic."""
 
 import time
 
@@ -18,22 +13,7 @@ def fetch_data_with_retry(
     max_retries: int = 3,
     retry_delay: int = 10,
 ) -> pd.DataFrame | None:
-    """
-    Fetch stock data from Yahoo Finance with automatic retry on failure.
-
-    Uses linear backoff strategy where wait time increases with each retry attempt.
-
-    Args:
-        symbol: Stock ticker symbol (e.g., 'AAPL', 'GOOGL').
-        start_date: Start date in YYYY-MM-DD format.
-        end_date: End date in YYYY-MM-DD format.
-        max_retries: Maximum number of retry attempts.
-        retry_delay: Base delay between retries in seconds.
-
-    Returns:
-        DataFrame with OHLCV columns (Open, High, Low, Close, Volume),
-        or None if all retry attempts failed.
-    """
+    """Download OHLCV data with linear backoff retries. Returns None on failure."""
     for attempt in range(max_retries):
         print(f"Attempt {attempt + 1}: Fetching data for {symbol}...")
 
@@ -62,23 +42,10 @@ def fetch_data_with_retry(
 
 
 def clean_data(data: pd.DataFrame) -> pd.DataFrame:
-    """
-    Clean and prepare raw stock data for analysis.
-
-    Handles multi-level column indices that may come from yfinance
-    and removes rows with missing Close prices.
-
-    Args:
-        data: Raw stock data DataFrame from yfinance.
-
-    Returns:
-        Cleaned DataFrame with flattened columns and no missing Close values.
-    """
-    # Handle multi-level columns from yfinance
+    """Flatten multi-level columns from yfinance and drop rows missing Close."""
     if isinstance(data.columns, pd.MultiIndex):
         data.columns = [col[0] if isinstance(col, tuple) else col for col in data.columns]
 
-    # Remove rows with missing Close prices (essential for analysis)
     data = data.dropna(subset=["Close"])
 
     return data

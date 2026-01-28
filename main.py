@@ -1,18 +1,6 @@
 """
-Stock Technical Analysis Tool - Main Entry Point.
-
-Orchestrates the full analysis pipeline:
-1. Fetch historical stock data from Yahoo Finance
-2. Calculate technical indicators (MA, RSI, MACD, Bollinger Bands)
-3. Analyze trends and generate trading signals
-4. Train ML model and predict next-day price (optional)
-5. Generate visualization and reports
-
-Usage:
-    python main.py
-
-Configuration:
-    Edit src/config.py to customize analysis parameters.
+Main entry point for running the stock analysis pipeline.
+Pulls data, calculates indicators, runs ML prediction, and outputs charts/reports.
 """
 
 import sys
@@ -31,7 +19,7 @@ SEPARATOR = "=" * 60
 
 
 def print_header() -> None:
-    """Print the application header with stock info."""
+    """Print header banner with stock symbol and date range."""
     print(SEPARATOR)
     print("STOCK TECHNICAL ANALYSIS TOOL")
     print(SEPARATOR)
@@ -40,7 +28,7 @@ def print_header() -> None:
 
 
 def fetch_and_prepare_data() -> pd.DataFrame:
-    """Fetch, clean, and calculate indicators for stock data."""
+    """Fetch from Yahoo Finance, clean, and compute all indicators."""
     data = fetch_data_with_retry(
         config.SYMBOL,
         config.START_DATE,
@@ -68,7 +56,7 @@ def fetch_and_prepare_data() -> pd.DataFrame:
 
 
 def run_ml_prediction(data: pd.DataFrame) -> tuple:
-    """Run ML prediction if enabled. Returns (metrics, next_day, predictions_df)."""
+    """Train LSTM model and return (metrics, next_day, predictions_df) if enabled."""
     if not config.ENABLE_ML_PREDICTION:
         return None, None, None
 
@@ -86,7 +74,7 @@ def run_ml_prediction(data: pd.DataFrame) -> tuple:
 
 
 def main() -> None:
-    """Main entry point - orchestrates the complete stock analysis pipeline."""
+    """Run the full analysis pipeline: fetch -> indicators -> ML -> chart -> report."""
     print_header()
 
     data = fetch_and_prepare_data()

@@ -1,9 +1,4 @@
-"""
-Reporting module for generating analysis reports.
-
-Creates comprehensive text-based reports summarizing stock analysis results
-including trends, performance metrics, and ML predictions.
-"""
+"""Text-based report output for trend stats, performance, and ML results."""
 
 from typing import Any
 
@@ -15,7 +10,6 @@ TRADING_DAYS_PER_YEAR = 252
 
 
 def _get_rsi_status(rsi: float) -> str:
-    """Return RSI status based on thresholds."""
     if rsi > 70:
         return "Overbought"
     if rsi < 30:
@@ -24,7 +18,6 @@ def _get_rsi_status(rsi: float) -> str:
 
 
 def _get_trend_status(signal: int) -> str:
-    """Return trend status based on signal value."""
     if signal == 1:
         return "UPTREND"
     if signal == -1:
@@ -33,7 +26,6 @@ def _get_trend_status(signal: int) -> str:
 
 
 def _calculate_performance_metrics(display_data: pd.DataFrame) -> dict[str, float]:
-    """Calculate performance metrics from display data."""
     first_close = display_data["Close"].iloc[0]
     last_close = display_data["Close"].iloc[-1]
     total_return = (last_close / first_close - 1) * 100
@@ -63,21 +55,7 @@ def print_report(
     ma_short: int = 50,
     ma_long: int = 200,
 ) -> None:
-    """
-    Print a comprehensive stock analysis report.
-
-    Outputs:
-    - Trend analysis (uptrend/downtrend days and percentages)
-    - Performance metrics (returns, volatility, drawdown)
-    - Current technical indicator values and signals
-
-    Args:
-        data: Full stock data with all indicators.
-        display_data: Filtered data for the analysis period.
-        symbol: Stock ticker symbol.
-        ma_short: Short-term moving average period.
-        ma_long: Long-term moving average period.
-    """
+    """Print trend breakdown, performance metrics, and current indicator readings."""
     ma_short_col = f"MA{ma_short}"
     ma_long_col = f"MA{ma_long}"
 
@@ -88,15 +66,12 @@ def print_report(
         print("WARNING: Not enough data for report")
         return
 
-    # Trend statistics
     total_days = len(valid_data)
     uptrend_days = (valid_data["Signal"] == 1).sum()
     downtrend_days = (valid_data["Signal"] == -1).sum()
 
-    # Performance metrics
     metrics = _calculate_performance_metrics(display_data)
 
-    # Print report
     print(f"\n{'=' * 20} {symbol} ANALYSIS REPORT {'=' * 20}")
 
     print("\n----- TREND ANALYSIS -----")
@@ -122,13 +97,7 @@ def print_report(
 
 
 def print_ml_report(metrics: dict[str, Any] | None, next_day_prediction: float | None) -> None:
-    """
-    Print ML model performance and prediction report.
-
-    Args:
-        metrics: Dictionary containing model training metrics.
-        next_day_prediction: Predicted next day closing price.
-    """
+    """Print MAE/RMSE scores and the next-day price forecast."""
     if metrics is None or next_day_prediction is None:
         return
 

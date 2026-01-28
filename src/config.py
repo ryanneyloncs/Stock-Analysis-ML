@@ -1,15 +1,10 @@
-"""
-Configuration settings for stock analysis.
-
-This module contains all configurable parameters for the stock analyzer.
-Edit these values to customize your analysis.
-"""
+"""Configuration settings for stock analysis."""
 
 # Stock Settings
-SYMBOL: str = "GMAB"
-START_DATE: str = "2023-01-01"
-END_DATE: str = "2026-01-13"
-DISPLAY_START: str = "2024-01-01"
+SYMBOL: str = "AAPL"
+START_DATE: str = "2023-06-01"
+END_DATE: str = "2026-01-28"
+DISPLAY_START: str = "2024-06-01"
 
 # Technical Indicator Settings
 MA_SHORT: int = 50
@@ -29,6 +24,6 @@ SHOW_CHART: bool = False
 
 # Machine Learning Settings
 ENABLE_ML_PREDICTION: bool = True
-ML_LOOKBACK_DAYS: int = 60
-ML_EPOCHS: int = 100
-ML_VERBOSE: int = 0  # 0=silent, 1=progress bar
+ML_LOOKBACK_DAYS: int = 90
+ML_EPOCHS: int = 200
+ML_VERBOSE: int = 1  # 0=silent, 1=progress bar

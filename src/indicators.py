@@ -1,13 +1,8 @@
-"""
-Technical indicators calculation module.
-
-Provides functions to calculate common technical analysis indicators
-used in stock market analysis.
-"""
+"""Technical indicator calculations (MAs, RSI, MACD, Bollinger Bands)."""
 
 import pandas as pd
 
-EPSILON = 1e-10  # Small value to avoid division by zero
+EPSILON = 1e-10
 
 
 def _calculate_rsi(close: pd.Series, period: int) -> pd.Series:
@@ -50,59 +45,24 @@ def calculate_indicators(
     bollinger_period: int = 20,
     bollinger_std: float = 2.0,
 ) -> pd.DataFrame:
-    """
-    Calculate all technical indicators for the given stock data.
-
-    Adds the following indicators to the DataFrame:
-    - Moving Averages (MA{short}, MA{long})
-    - RSI (Relative Strength Index)
-    - Bollinger Bands (upper, middle, lower)
-    - MACD (Moving Average Convergence Divergence)
-    - Volume Moving Average
-    - Daily Returns
-    - EMAs for trend detection
-
-    Args:
-        data: Stock data with Close, High, Low, Volume columns.
-        ma_short: Short-term moving average period in days.
-        ma_long: Long-term moving average period in days.
-        rsi_period: RSI calculation period in days.
-        bollinger_period: Bollinger Bands period in days.
-        bollinger_std: Bollinger Bands standard deviation multiplier.
-
-    Returns:
-        DataFrame with all technical indicators added as new columns.
-    """
+    """Add all technical indicator columns to the DataFrame in place."""
     print("Calculating technical indicators...")
 
     close = data["Close"]
 
-    # Moving Averages
     data[f"MA{ma_short}"] = close.rolling(window=ma_short).mean()
     data[f"MA{ma_long}"] = close.rolling(window=ma_long).mean()
-
-    # RSI
     data["RSI"] = _calculate_rsi(close, rsi_period)
-
-    # Bollinger Bands
     data["BB_middle"], data["BB_upper"], data["BB_lower"] = _calculate_bollinger_bands(
         close, bollinger_period, bollinger_std
     )
-
-    # MACD
     data["MACD"], data["MACD_signal"], data["MACD_hist"] = _calculate_macd(close)
-
-    # Store intermediate EMAs (used by MACD calculation but also useful for analysis)
     data["EMA12"] = close.ewm(span=12, adjust=False).mean()
     data["EMA26"] = close.ewm(span=26, adjust=False).mean()
-
-    # Volume Moving Average
     data["Volume_MA20"] = data["Volume"].rolling(window=20).mean()
-
-    # Daily Returns (percentage)
     data["Daily_Return"] = close.pct_change() * 100
 
-    # EMAs for trend detection
+    # Used by trend_analyzer for short-term signal
     data["EMA10"] = close.ewm(span=10, adjust=False).mean()
     data["EMA30"] = close.ewm(span=30, adjust=False).mean()
 
